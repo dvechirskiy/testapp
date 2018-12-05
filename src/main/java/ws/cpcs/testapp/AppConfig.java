@@ -4,10 +4,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.task.AsyncListenableTaskExecutor;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+import org.springframework.util.concurrent.ListenableFutureCallback;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -25,12 +28,15 @@ public class AppConfig {
     public static final AtomicInteger COUNTER = new AtomicInteger(50);
 
     @Bean
-    TaskExecutor taskExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setMaxPoolSize(100);
-        executor.setCorePoolSize(100);
-        executor.setQueueCapacity(200);
-        return executor;
+    AsyncListenableTaskExecutor taskExecutor () {
+        SimpleAsyncTaskExecutor t = new SimpleAsyncTaskExecutor();
+        t.setConcurrencyLimit(100);
+        return t;
+    }
+
+    @Bean
+    ListenableFutureCallback<String> taskCallback () {
+        return new TaskListenableFutureCallback();
     }
 
 }

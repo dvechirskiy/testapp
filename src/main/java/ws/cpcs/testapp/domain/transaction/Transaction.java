@@ -29,11 +29,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "number_of_producers")
-    private Integer numberOfProducers;
-
-    @Column(name = "number_of_consumers")
-    private Integer numberOfConsumers;
+    @Column(name = "message_log")
+    private String messageLog;
 
     @Setter(AccessLevel.NONE)
     @Temporal(TemporalType.TIMESTAMP)
@@ -42,8 +39,7 @@ public class Transaction {
     @CreatedDate
     private Date createdAt;
 
-    public Transaction(Integer numberOfProducers, Integer numberOfConsumers) {
-        this.numberOfProducers = numberOfProducers;
-        this.numberOfConsumers = numberOfConsumers;
+    public Transaction(String messageLog) {
+        this.messageLog = messageLog;
     }
 }

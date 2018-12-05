@@ -6,19 +6,20 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ws.cpcs.testapp.AppConfig;
 
+import java.util.concurrent.Callable;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Task implements Runnable {
+public abstract class Task implements Callable<String> {
     static ReentrantLock counterLock = new ReentrantLock(true);
 
     String name;
 
     @Override
-    public void run() {
+    public String call() {
         int counter = AppConfig.COUNTER.get();
         while (counter < AppConfig.MAX_COUNTER_NUMBER && counter > AppConfig.MIN_COUNTER_NUMBER) {
             try {
@@ -32,6 +33,9 @@ public abstract class Task implements Runnable {
                 if (counter < AppConfig.MAX_COUNTER_NUMBER && counter > AppConfig.MIN_COUNTER_NUMBER) {
                     counter = changeValue();
                     System.out.println(name + " changed the counter: " + counter);
+                    if (counter >= AppConfig.MAX_COUNTER_NUMBER || counter <= AppConfig.MIN_COUNTER_NUMBER) {
+                        return "done";
+                    }
                 } else {
                     counter = AppConfig.COUNTER.get();
                 }
@@ -39,6 +43,7 @@ public abstract class Task implements Runnable {
                 counterLock.unlock();
             }
         }
+        return null;
     }
 
     public abstract int changeValue();

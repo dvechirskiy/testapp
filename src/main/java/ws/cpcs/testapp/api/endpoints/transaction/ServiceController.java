@@ -2,10 +2,8 @@ package ws.cpcs.testapp.api.endpoints.transaction;
 
 import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -31,16 +29,17 @@ public class ServiceController {
 
     @PutMapping("transactions")
     public ResponseEntity putTransaction(@RequestBody TransactionForm transactionForm) {
-        Transaction transaction = new Transaction(transactionForm.getNumberOfProducers(), transactionForm.getNumberOfConsumers());
-        transactionRepository.save(transaction);
-        transactions.addConsumer(transactionForm.getNumberOfConsumers());
+        transactionRepository.save(new Transaction(String.format("Producers will be increased for %d", transactionForm.getNumberOfProducers())));
         transactions.addProducer(transactionForm.getNumberOfProducers());
+        transactionRepository.save(new Transaction(String.format("Producers will be increased for %d", transactionForm.getNumberOfConsumers())));
+        transactions.addConsumer(transactionForm.getNumberOfConsumers());
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PutMapping("reset")
     public  ResponseEntity resetCounter(@RequestBody Integer number) {
         AppConfig.COUNTER.set(number);
+        transactionRepository.save(new Transaction(String.format("Producers will be increased for %d", number)));
         return ResponseEntity.ok().build();
     }
 }

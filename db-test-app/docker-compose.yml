@@ -1,0 +1,14 @@
+version: "3"
+
+services:
+
+    test-app-db:
+        env_file:
+            - .env
+        container_name: testappdb
+        image: mariadb
+        ports:
+            - "3307:3306"
+        volumes:
+            - ./conf.d:/etc/mysql/conf.d
+            - ./db:/var/lib/mysql
